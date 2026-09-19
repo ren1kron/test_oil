@@ -1,0 +1,27 @@
+[
+  {
+    "risk_id": "TEAM_CORE_DELAY",
+    "event": "Earth-Core: задержка 30 дней и 20% недопоставки",
+    "source_id": "A",
+    "start_year": 2038,
+    "end_year": 2039,
+    "delivery_share": 0.8,
+    "price_multiplier": 1,
+    "delay_days": 30,
+    "probability_basis_or_range": "TEAM_ASSUMPTION: сценарий, вероятность не задана",
+    "cause": "Сценарное допущение команды",
+    "owner": "Оператор узла",
+    "mitigation": "Резервное окно запуска и восстановление объема; затраты меры требуют отдельного обоснования",
+    "dependencies": "Не комбинируется с обязательным стрессом",
+    "residual_delivery_share": 1,
+    "residual_delay_days": 7,
+    "affected_parameter": "delivery_share / delivery_delay / variable_price",
+    "period": "2038–2039",
+    "financial_consequence_mln": 2.8727327153319493,
+    "physical_consequence_t": 90.03167123287662,
+    "service_consequence": -0.13803090410958252,
+    "residual_shortage_t": 7.287671232876817,
+    "residual_cost_delta_mln": 6.832535995497892,
+    "mitigation_cost_included": false
+  }
+]

@@ -8,7 +8,9 @@ recommend a participant supply strategy.
 from __future__ import annotations
 
 import csv
+import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -17,6 +19,17 @@ import yaml
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def repository_files():
+    """Do not inspect installed dependencies, Git internals, or local caches."""
+    for directory, children, files in os.walk(ROOT):
+        children[:] = [name for name in children if name not in {
+            ".git", ".venv", ".idea", "__pycache__", ".pytest_cache", ".mypy_cache",
+            ".ruff_cache", "build", "dist", "saved_plans"
+        } and not name.endswith(".egg-info")]
+        for name in files:
+            yield Path(directory) / name
 
 
 def fail(message: str) -> None:
@@ -162,7 +175,7 @@ def check_validation_vectors() -> None:
 def check_relative_markdown_links() -> None:
     link_re = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
     problems: list[str] = []
-    for md in ROOT.rglob("*.md"):
+    for md in (p for p in repository_files() if p.suffix == ".md"):
         text = md.read_text(encoding="utf-8")
         for target in link_re.findall(text):
             target = target.strip()
@@ -190,7 +203,7 @@ def check_no_ready_solution() -> None:
         fail("starter repo contains participant-solution artifacts: " + ", ".join(found))
 
     phrases = ["рекомендуем купить", "нужно выбрать lunar-isru", "лучший поставщик", "победная стратегия", "оптимальный объём earth-core", "инвестировать в 2036"]
-    for p in ROOT.rglob("*"):
+    for p in repository_files():
         if not p.is_file() or p.suffix.lower() not in {".md", ".csv", ".yaml", ".yml", ".json"}:
             continue
         text = p.read_text(encoding="utf-8", errors="ignore").lower()
@@ -210,7 +223,7 @@ def check_required_readme_content() -> None:
 def check_no_placeholders_or_secrets() -> None:
     secret_name_re = re.compile(r"(^|/)(\.env|id_rsa|id_ed25519|credentials?\.json)$", re.I)
     placeholder_re = re.compile(r"\b(TBD|TODO|FIXME)\b")
-    for p in ROOT.rglob("*"):
+    for p in repository_files():
         if not p.is_file():
             continue
         rel = p.relative_to(ROOT).as_posix()
@@ -223,7 +236,12 @@ def check_no_placeholders_or_secrets() -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--participant", action="store_true", help="Allow implemented participant software; keep reference-data checks")
+    args = parser.parse_args()
     checks = [check_json_yaml_syntax, check_demand, check_sources, check_investments_and_constraints, check_mandatory_stress, check_schemas, check_validation_vectors, check_relative_markdown_links, check_no_ready_solution, check_required_readme_content, check_no_placeholders_or_secrets]
+    if args.participant:
+        checks.remove(check_no_ready_solution)
     for check in checks:
         check()
         print(f"PASS {check.__name__}")

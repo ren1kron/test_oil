@@ -6,3 +6,8 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.idea/
+saved_plans/
+*.egg-info/
+build/
+dist/

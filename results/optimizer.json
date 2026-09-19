@@ -1,0 +1,39 @@
+{
+  "earth": {
+    "status": "optimal_within_gap",
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "elapsed_seconds": 9.020357208006317,
+    "objective_mln": 10265.135645688282,
+    "lower_bound_mln": 10265.135645688282,
+    "relative_gap": 0.0,
+    "validated": true
+  },
+  "lunar": {
+    "status": "optimal_within_gap",
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "elapsed_seconds": 9.018386124982499,
+    "objective_mln": 9795.159803931261,
+    "lower_bound_mln": 9795.159803931261,
+    "relative_gap": 0.0,
+    "validated": true
+  },
+  "unrestricted": {
+    "status": "optimal_within_gap",
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "elapsed_seconds": 8.949685333995149,
+    "objective_mln": 9795.159803931263,
+    "lower_bound_mln": 9795.159803931263,
+    "relative_gap": 0.0,
+    "validated": true
+  },
+  "research-extension": {
+    "status": "optimal_within_gap",
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "elapsed_seconds": 9.643332042003749,
+    "objective_mln": 12412.844389021093,
+    "lower_bound_mln": 12408.675636508882,
+    "relative_gap": 0.0003358898682238433,
+    "validated": true
+  },
+  "input_fingerprint": "3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab"
+}
