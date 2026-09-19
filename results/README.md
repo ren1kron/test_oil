@@ -19,7 +19,7 @@
 - `*-response.zip`, `selected-stress-response.xlsx`: отдельная адаптация с сохранением исходных обязательств и сроками реакции.
 - `sensitivity-multiparameter.csv`, `sensitivity-thresholds.csv`: четыре ключевых параметра, диапазоны, cost/service/inventory/shortage и границы.
 - `stakeholders.csv`, `roadmap.csv`, `annual-constraints.csv`, `independent-controls.csv`: доказательные таблицы выбранной стратегии.
-- `completion-checks.json`, `evidence-manifest.json`: машинные проверки и хеши артефактов; отчет — в `docs/MANAGEMENT_REPORT.md` и HTML.
+- `completion-checks.json`, `evidence-manifest.json`: машинные проверки и хеши артефактов; 10-страничный memo — в `docs/MANAGEMENT_REPORT.*`, одностраничное сравнение — в `docs/SCENARIO_SUMMARY.*`.
 
 Планы находятся в [examples/plans](../examples/plans) и [examples/research_plans](../examples/research_plans). Контрольные стратегии используют один и тот же план для четырех сценариев, без скрытой перестройки заказов после шока.
 

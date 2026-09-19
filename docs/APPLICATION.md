@@ -111,4 +111,4 @@ xlsx = export_bytes(result, "xlsx")
 
 Научные ссылки организатора сохранены в [SCIENTIFIC_BASIS.md](SCIENTIFIC_BASIS.md); приложение не претендует на независимую проверку недоступных первичных документов. Факты о неполноте комплекта описаны в [ERRATA_AND_PROVENANCE.md](ERRATA_AND_PROVENANCE.md).
 
-Критерии и доказательства: [CRITERIA_AUDIT.md](CRITERIA_AUDIT.md). Формулы блоков и протокол тестов: [METHODS_AND_TESTS.md](METHODS_AND_TESTS.md). Управленческая записка генерируется из фактических Result, а не заполняется отдельными вручную введенными числами: [MANAGEMENT_REPORT.md](MANAGEMENT_REPORT.md).
+Критерии и доказательства: [CRITERIA_AUDIT.md](CRITERIA_AUDIT.md). Формулы блоков и протокол тестов: [METHODS_AND_TESTS.md](METHODS_AND_TESTS.md). Управленческая записка и отдельное одностраничное сравнение генерируются из фактических Result, а не заполняются отдельно введенными числами: [MANAGEMENT_REPORT.md](MANAGEMENT_REPORT.md), [SCENARIO_SUMMARY.md](SCENARIO_SUMMARY.md).

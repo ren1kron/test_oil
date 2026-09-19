@@ -53,7 +53,7 @@
 ## Комплект и приемка
 
 - Модель, интерфейс, исходные данные, BASE/stress, альтернативы, risk/mitigation/stakeholders, чувствительность, source references, конфигурация и инструкции — в репозитории.
-- Управленческая записка: [Markdown](MANAGEMENT_REPORT.md), [HTML для печати](MANAGEMENT_REPORT.html), включая одностраничное сравнение.
+- Управленческая записка: [Markdown](MANAGEMENT_REPORT.md), [10-страничный HTML для печати](MANAGEMENT_REPORT.html). Отдельное одностраничное сравнение: [Markdown](SCENARIO_SUMMARY.md), [HTML для печати](SCENARIO_SUMMARY.html).
 - Проверки: `.venv/bin/python -m pytest -q` и `.venv/bin/python tools/validate_reference_repo.py --participant`.
 - Генерация evidence/report: `.venv/bin/python tools/audit_submission.py`. Машинная приемка — `results/completion-checks.json`.
 - Предметные ограничения не замалчиваются: прототип агрегированный, стартовая партия и повторные поставки Earth-New — раскрытые соглашения; бюджеты мер и доля launch требуют дальнейшего подтверждения. Стратегия ответа условна на известный сценарий. Полноценная стохастическая надежность не заявляется.

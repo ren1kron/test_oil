@@ -1,0 +1,93 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Сравнение сценариев</title><style>body{font-family:Arial,sans-serif;color:#172331;margin:10mm;line-height:1.28;font-size:11px}h1{font-size:21px;margin:0 0 8px}h2{font-size:15px;margin:10px 0 4px}p{margin:5px 0}table{border-collapse:collapse;width:100%;font-size:9.5px}td,th{border:1px solid #cdd6df;padding:4px;text-align:left}th{background:#eaf0f5}@page{size:A4 landscape;margin:10mm}@media print{body{margin:0}}</style><body><h1>Одностраничное сравнение сценариев</h1><p><b>Решение:</b> сохранить архитектуру diversified; план ответа активировать при mandatory stress.</p><h2>Сценарии выбранной стратегии</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Сценарий</th>
+      <th>Стоимость, млн</th>
+      <th>Дефицит, т</th>
+      <th>Critical, т</th>
+      <th>Отклонено, т</th>
+      <th>Мин. сервис</th>
+      <th>Hard OK</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Базовый</td>
+      <td>11790.160</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Низкий спрос</td>
+      <td>12036.235</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>166.418</td>
+      <td>1.000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Высокий спрос</td>
+      <td>11785.727</td>
+      <td>283.000</td>
+      <td>41.166</td>
+      <td>0.000</td>
+      <td>0.800</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Обязательный стресс, без ответа</td>
+      <td>12370.721</td>
+      <td>226.992</td>
+      <td>58.795</td>
+      <td>0.000</td>
+      <td>0.734</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Обязательный стресс, после ответа</td>
+      <td>13140.329</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table><h2>Сравнение архитектур</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Архитектура</th>
+      <th>BASE, млн</th>
+      <th>BASE дефицит, т</th>
+      <th>Stress после ответа, т</th>
+      <th>Critical, т</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>earth</td>
+      <td>10265.136</td>
+      <td>0.000</td>
+      <td>144.000</td>
+      <td>20.959</td>
+    </tr>
+    <tr>
+      <td>lunar</td>
+      <td>9795.160</td>
+      <td>0.000</td>
+      <td>226.992</td>
+      <td>62.471</td>
+    </tr>
+    <tr>
+      <td>diversified</td>
+      <td>11790.160</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+    </tr>
+  </tbody>
+</table><h2>Почему решения сохраняются</h2><p>Инвестиции, базовые заказы и резервирование сохраняются: они уже приняты или обеспечивают ввод и готовность, а отмена не дает ресурс в пределах реакции. LOW/HIGH не перестраиваются: их переполнение 166.418 т и дефицит 283.000 т показывают границы исходного решения. Дополнительные партии используют только ранее оплаченные свободные права с учетом lead time и 42 дней реакции. В mandatory stress это уменьшает дефицит с 226.992 до 0.000 т. Это единственная из трех архитектур, устраняющая общий и critical дефицит после допустимого ответа.</p><p><small>Hard OK означает соблюдение жестких ограничений; сервис и дефицит показаны отдельно. Fingerprint: 3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab</small></p></body></html>

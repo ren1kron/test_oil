@@ -3,7 +3,9 @@
   "results/comparison.csv": "f239e5d7942c02c886cd7ee269839204de8fef4dcb1ff03a2a0af8333cebb4ce",
   "results/risk-register.json": "78168f136811f6273b3a858a9829b3530ed0d98cf6b30399b0999a807bf5daf0",
   "results/sensitivity-multiparameter.csv": "514b6847609c347d10acf92e8cb1ed412c2eb502becb1ec6e031646f1354a81d",
-  "docs/MANAGEMENT_REPORT.md": "850af2f8cb681b1a9192b4dd72f5ecb524d42a39863d7113b4bf55bc28e4aa2b",
-  "docs/MANAGEMENT_REPORT.html": "f1da1a026d8204d9b81ee954dd31d8c685de54ec74d873a6c12c1920e30e897a",
+  "docs/MANAGEMENT_REPORT.md": "db73ba81d4f5d22cf27444948293bcc8d7589f801cad6d9c641b4d98986317ce",
+  "docs/MANAGEMENT_REPORT.html": "42ae2f96d2a3cb272bfa241033762a10953ed29965a3ffefb3ad9d2e68cbaab8",
+  "docs/SCENARIO_SUMMARY.md": "758cf5a4fab395b9211b4e68fc1e4b80b0b223d505fc20741ab76dd8075436e1",
+  "docs/SCENARIO_SUMMARY.html": "07f5c54f43015fb8117f0a18c6098b363196b72fc6441ef78070c7f0680fe659",
   "examples/selected_plan.json": "2fd02d32c697f56ddbc53c51e6f574da698ebea5649f78bc39c788c9b5c5503a"
 }
