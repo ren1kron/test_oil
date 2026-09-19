@@ -37,3 +37,19 @@ def test_app_edits_and_optimization():
     assert app.session_state["optimization"].validated
     button(app, "Использовать найденный план").click().run()
     assert app.session_state["plan"]["plan_id"] == "optimized"
+
+
+def test_app_research_input_edit_and_stakeholders():
+    app = AppTest.from_file(str(ROOT/"app.py"), default_timeout=30).run()
+    version = app.session_state["editor_version"]
+    app.session_state[f"case_demand_{version}"] = {"edited_rows": {0: {"base_total_t": 105.0}}, "added_rows": [], "deleted_rows": []}
+    button(app, "Применить копию входных данных").click().run()
+    assert not app.exception
+    assert app.session_state["plan"]["case_snapshot"]["demand"]["2035"]["base_total_t"] == 105
+    button(app, "Рассчитать").click().run()
+    assert app.session_state["result"].payload["yearly_balance"][0]["demand_t"] == 105
+    button(app, "Рассчитать интересы и roadmap").click().run()
+    assert len(app.session_state["stakeholder_result"][1].payload["stakeholders"]) == 36
+    button(app, "Вернуть выбранный контрольный набор").click().run()
+    assert app.session_state["plan"]["case_snapshot"] is None
+    assert not app.exception

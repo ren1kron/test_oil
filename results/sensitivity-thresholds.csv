@@ -1,0 +1,9 @@
+parameter,status,last_passing,first_failing,basis
+demand,found,1.0,1.0000203450520833,"0.8–1.25 из low/high данных; ×1.5–2 только TEAM reverse-stress, не прогноз"
+demand,ranking_change_bracket,0.8,1.0,Изменение лучшего допустимого плана: none_feasible → lunar; интервал сетки
+demand,ranking_change_bracket,1.0,1.1,Изменение лучшего допустимого плана: lunar → none_feasible; интервал сетки
+core_price,not_found_in_range,2.0,,"+25% как контроль масштаба из mandatory; остальные границы TEAM_ASSUMPTION, без вероятности"
+core_delivery,found,0.95111083984375,0.9510904947916666,TEAM: 0–100% исполнение ключевого земного канала; весь диапазон определен физически
+core_delivery,ranking_change_bracket,1.0,0.9,Изменение лучшего допустимого плана: lunar → none_feasible; интервал сетки
+core_delay,found,0.999755859375,1.00341796875,"TEAM: 7–180 дней; 42 дня — масштаб Emergency lead time, не оценка вероятности"
+core_delay,ranking_change_bracket,0.0,7.0,Изменение лучшего допустимого плана: lunar → none_feasible; интервал сетки

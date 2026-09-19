@@ -107,6 +107,24 @@ class Plan(Record):
     decisions: Decisions = Field(default_factory=Decisions)
     assumptions: Assumptions = Field(default_factory=Assumptions)
     description: str = ""
+    case_snapshot: dict | None = None
+    adaptation: dict | None = None
+
+    @field_validator("adaptation")
+    @classmethod
+    def valid_adaptation(cls, value):
+        if value is None:
+            return value
+        required = {"scenario_id", "decision_date", "coordination_cost_mln", "minimum_reaction_days", "committed_orders", "base_plan_fingerprint", "rule"}
+        if set(value) != required:
+            raise ValueError("План ответа должен содержать сценарий, дату, бюджет, срок реакции и ссылку на исходные обязательства")
+        day_index(value["decision_date"])
+        for k in ["coordination_cost_mln", "minimum_reaction_days", "committed_orders"]:
+            if not isinstance(value[k], (int, float)) or not math.isfinite(value[k]) or value[k] < 0:
+                raise ValueError("Некорректный бюджет / срок / число обязательств ответа")
+        if any(int(value[k]) != value[k] for k in ["minimum_reaction_days", "committed_orders"]):
+            raise ValueError("Срок и число обязательств должны быть целыми")
+        return value
 
 
 class Risk(Record):
@@ -125,6 +143,19 @@ class Risk(Record):
     dependencies: str = "Не комбинируется с обязательным стрессом"
     residual_delivery_share: float = Field(default=1, ge=0, le=1)
     residual_delay_days: int = Field(default=0, ge=0)
+    residual_price_multiplier: float = Field(default=1, gt=0)
+    mitigation_cost_mln: float = Field(default=20, ge=0)
+    mitigation_decision_date: str | None = None
+    reaction_days: int = Field(default=42, ge=0)
+    mitigation_active: bool = False
+    mitigation_cost_basis: str = "TEAM_ASSUMPTION: бюджет 20 млн на резервную операционную процедуру; не котировка поставщика"
+
+    @field_validator("mitigation_decision_date")
+    @classmethod
+    def mitigation_date(cls, value):
+        if value is not None:
+            day_index(value)
+        return value
 
     @model_validator(mode="after")
     def valid_period(self):

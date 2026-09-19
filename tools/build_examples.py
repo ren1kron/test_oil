@@ -14,6 +14,7 @@ from fuel_planner.data import ROOT, load_case, research_case
 from fuel_planner.engine import evaluate
 from fuel_planner.models import Risk
 from fuel_planner.optimizer import Settings, optimize
+from fuel_planner.recovery import reserve_flexibility
 from fuel_planner.storage import export_bytes, save_plan
 
 
@@ -42,6 +43,11 @@ def main():
             (output / "risk-analysis.zip").write_bytes(export_bytes(affected, "csv"))
             pd.DataFrame(sensitivity(case, solution.plan)).to_csv(output / "sensitivity.csv", index=False)
             (output / "demand-threshold.json").write_text(json.dumps(demand_threshold(case, solution.plan), indent=2), encoding="utf-8")
+    diversified = optimize(case, Settings(plan_id="diversified", investments={"EARTH_NEW": 2035, "ZBO": 2036, "LUNAR_ISRU": 2037}))
+    if diversified.plan is None:
+        raise RuntimeError(diversified.message)
+    metadata["diversified_before_flexibility_reservations"] = diversified.metadata()
+    save_plan(reserve_flexibility(case, diversified.plan), ROOT / "examples" / "plans")
     extended = research_case(case, extra_source=True, future_year=True)
     extension = optimize(extended, Settings(plan_id="research-extension"))
     metadata["research-extension"] = extension.metadata()
@@ -55,6 +61,8 @@ def main():
     (output / "optimizer.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
     pd.DataFrame(comparisons).to_csv(output / "comparison.csv", index=False)
     print("Examples and exports written to", output, flush=True)
+    from tools.audit_submission import main as audit
+    audit()
 
 
 if __name__ == "__main__":

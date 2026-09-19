@@ -33,6 +33,59 @@ class Case:
         return hashlib.sha256(json.dumps(normalized, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
+def case_snapshot(case: Case) -> dict:
+    return json.loads(json.dumps(case.__dict__, ensure_ascii=False, allow_nan=False))
+
+
+def case_from_snapshot(snapshot: dict) -> Case:
+    try:
+        def restore(value):
+            if isinstance(value, dict):
+                return {int(k) if isinstance(k, str) and k.isdigit() else k: restore(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [restore(v) for v in value]
+            return value
+        result = Case(**restore(snapshot))
+        validate_case(result)
+        organizer = load_case()
+        if result.constraints != organizer.constraints or result.scenarios["MANDATORY_STRESS"] != organizer.scenarios["MANDATORY_STRESS"]:
+            # Additional neutral years are permitted; organizer years cannot be rewritten.
+            for field in ["constraints"]:
+                if getattr(result, field) != getattr(organizer, field):
+                    raise ValueError("Исследовательская копия должна сохранять ограничения организатора")
+            for key, value in organizer.scenarios["MANDATORY_STRESS"].items():
+                observed = result.scenarios["MANDATORY_STRESS"].get(key)
+                if isinstance(value, dict):
+                    if not isinstance(observed, dict) or any(observed.get(k) != v for k, v in value.items()):
+                        raise ValueError("Обязательный стресс нельзя изменять в копии")
+                elif observed != value:
+                    raise ValueError("Обязательный стресс нельзя изменять в копии")
+        return result
+    except (TypeError, KeyError, AttributeError) as exc:
+        raise ValueError(f"Некорректный снимок входных данных: {exc}") from exc
+
+
+def edit_case(case: Case, demands: list[dict], sources: list[dict], rationale: str) -> Case:
+    if not rationale.strip():
+        raise ValueError("Объясните изменения как TEAM_ASSUMPTION")
+    c = copy.deepcopy(case)
+    if len({int(r["year"]) for r in demands}) != len(demands) or len({r["source_id"] for r in sources}) != len(sources):
+        raise ValueError("Повторяющиеся годы или источники")
+    if not set(case.demand).issubset({int(r["year"]) for r in demands}) or not set(case.sources).issubset({r["source_id"] for r in sources}):
+        raise ValueError("Нельзя удалять исходные периоды и источники; используйте нулевой объем решения")
+    c.demand, c.sources = {}, {}
+    for row in demands:
+        year = int(row["year"])
+        if float(row["year"]) != year:
+            raise ValueError("Год должен быть целым")
+        c.demand[year] = dict(row, year=year, status="TEAM_ASSUMPTION")
+    for row in sources:
+        c.sources[row["source_id"]] = dict(row, status="TEAM_ASSUMPTION")
+    c.assumptions.append(f"TEAM_ASSUMPTION: {rationale}; исходный fingerprint={case.fingerprint}; сценарии и hard limits сохранены")
+    validate_case(c)
+    return c
+
+
 def load_case(root: Path | str = ROOT) -> Case:
     root = Path(root)
 
@@ -66,9 +119,16 @@ def load_case(root: Path | str = ROOT) -> Case:
 
 def validate_case(case: Case):
     import math
+    if not {"BASE", "ZBO"} <= case.storage.keys() or not {"EARTH_NEW", "LUNAR_ISRU", "ZBO"} <= case.investments.keys():
+        raise ValueError("Отсутствуют обязательные режимы хранения или инвестиционные опции")
+    ids = [r["constraint_id"] for r in case.constraints]
+    if len(set(ids)) != len(ids) or any(not isinstance(r["value"], (int, float)) or not math.isfinite(r["value"]) or r["value"] < 0 for r in case.constraints):
+        raise ValueError("Ограничения должны иметь уникальные ID и конечные неотрицательные пороги")
     if not case.years or case.years != list(range(case.years[0], case.years[-1] + 1)):
         raise ValueError("Годы спроса должны быть непрерывны")
     for row in case.demand.values():
+        if any(not isinstance(row.get(k), (int, float)) for k in ["base_total_t", "base_critical_t", "low_total_t", "high_total_t"]):
+            raise ValueError("Все значения спроса должны быть числами")
         if not 0 <= row["base_critical_t"] <= row["base_total_t"]:
             raise ValueError("Критический спрос должен входить в общий")
     for group in [case.demand.values(), case.sources.values(), case.storage.values(), case.investments.values()]:
@@ -77,6 +137,9 @@ def validate_case(case: Case):
                 if isinstance(value, (int, float)) and (not math.isfinite(value) or value < 0):
                     raise ValueError(f"Некорректное числовое поле: {key}")
     for s in case.sources.values():
+        required_numbers = ["capacity_t_per_year", "variable_cost_mln_per_t", "reservation_rate_mln_per_t_year_capacity", "take_or_pay_share", "lead_time_min_value", "lead_time_max_value"]
+        if any(not isinstance(s.get(k), (int, float)) for k in required_numbers):
+            raise ValueError("Мощности, цены, договорные доли и lead time должны быть числами")
         if not 0 <= s["take_or_pay_share"] <= 1 or s["lead_time_min_value"] > s["lead_time_max_value"]:
             raise ValueError("Некорректные параметры поставщика")
         if s["lead_time_unit"] not in {"day", "week", "month", "year"}:

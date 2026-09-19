@@ -39,7 +39,25 @@ def capacity_excess(actual: float, maximum: float) -> float:
 
 
 def violation(rule, period, actual, limit, source=None, severity="hard", message=""):
-    return dict(rule_id=rule, period=str(period), source_id=source or "", actual=actual,
+    reasons = {
+        "CAPACITY_EXCEEDED": "Резервируемая мощность превышает мощность источника",
+        "ORDER_EXCEEDS_CONTRACT": "Годовой заказ превышает объем доступного договора",
+        "ARRIVAL_CAPACITY_EXCEEDED": "Фактическое поступление в году превышает доступную мощность канала",
+        "LEAD_TIME": "Между заказом и поставкой недостаточно времени",
+        "SOURCE_UNAVAILABLE": "Поставка или заказ до допустимого ввода источника",
+        "NO_ACTIVE_CONTRACT": "На дату поставки отсутствует действующий договор",
+        "RESERVATION_BEFORE_COMMISSIONING": "Период резервирования начинается до ввода источника",
+        "RESERVE_45D": "На начало года недостаточно физического запаса",
+        "STRESS_LOSS_LIMIT": "Доля потерь превышает обязательный стрессовый предел",
+        "EMERGENCY_BASE_STREAK": "Emergency используется более двух последовательных лет",
+        "ISRU_FINANCING_DEADLINE": "ISRU не профинансирован до 2038 года",
+        "ZBO_EARLIEST_YEAR": "ZBO введена раньше доступности опции",
+        "CAPEX_2037": "Кумулятивный CAPEX до 2037 превышает лимит",
+        "CAPEX_2040": "Кумулятивный CAPEX до 2040 превышает лимит",
+    }
+    message = message or reasons.get(rule, "Уровень обслуживания ниже годового требования" if "SERVICE" in rule else "Нарушено численное ограничение")
+    unit = "share" if "SERVICE" in rule or rule == "STRESS_LOSS_LIMIT" else "mln_units" if "CAPEX" in rule else "day" if rule == "LEAD_TIME" else "year" if rule in {"ISRU_FINANCING_DEADLINE", "ZBO_EARLIEST_YEAR", "EMERGENCY_BASE_STREAK"} else "t/year" if rule in {"CAPACITY_EXCEEDED", "RESERVATION_BEFORE_COMMISSIONING"} else "t"
+    return dict(rule_id=rule, period=str(period), year=int(str(period)[:4]), unit=unit, source_id=source or "", actual=actual,
                 limit=limit, excess=abs(actual - limit), severity=severity, message=message)
 
 
@@ -117,8 +135,15 @@ def price_multiplier(case, scenario, source, year, risk=None):
     prices = cfg.get("variable_price_multiplier", {})
     value = prices.get(source["name"], {}).get(year, prices.get("default", 1))
     if risk and source["source_id"] == risk.source_id and risk.start_year <= year <= risk.end_year:
-        value *= risk.price_multiplier
+        effective = mitigation_effective_day(case, risk)
+        # A hedge is effective only for an entire newly contracted delivery year.
+        first_order = (year-case.years[0])*365 - lead_days(source["lead_time_max_value"], source["lead_time_unit"])
+        value *= risk.residual_price_multiplier if risk.mitigation_active and first_order >= effective else risk.price_multiplier
     return value
+
+
+def mitigation_effective_day(case, risk):
+    return day_index(risk.mitigation_decision_date or f"{risk.start_year}-01-01", case.years[0]) + risk.reaction_days
 
 
 @dataclass
@@ -140,7 +165,12 @@ class Result:
                     shortage_t=sum(r["shortage_t"] for r in years),
                     min_total_service=min(r["total_service_level"] for r in years),
                     min_critical_service=min(r["critical_service_level"] for r in years),
-                    violations=len(self.payload["constraint_checks"]))
+                    violations=len(self.payload["constraint_checks"]),
+                    critical_shortage_t=sum(max(0, r["critical_demand_t"]-r["critical_served_t"]) for r in years),
+                    min_inventory_t=min(r["closing_inventory_t"] for r in self.payload["inventory_trace"]),
+                    max_inventory_t=max(r["closing_inventory_t"] for r in self.payload["inventory_trace"]),
+                    rejected_t=sum(r["rejected_t"] for r in years),
+                    flexible_rights_2038_t=sum(c["uncalled_contract_t"] for c in self.payload["contract_ledger"] if c["year"] == 2038 and c["lead_days"] <= 122 and c["available_capacity_t"] > 0))
 
 
 def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None = None,
@@ -154,6 +184,8 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
     if risk and (scenario != risk.risk_id or risk.source_id not in case.sources):
         raise ValueError("Риск должен иметь собственный сценарий и известный источник")
     first, n = case.years[0], len(case.years) * 365
+    if plan.adaptation and plan.adaptation["scenario_id"] != scenario:
+        raise ValueError("Адаптированный план применяется только к указанному сценарию")
     active, capex, checks = investment_state(case, plan)
     reservations = {}
     for res in plan.decisions.capacity_reservations:
@@ -167,7 +199,7 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
         if res.annual_capacity_t > source["capacity_t_per_year"] + TOL:
             checks.append(violation("CAPACITY_EXCEEDED", res.year, res.annual_capacity_t, source["capacity_t_per_year"], res.source_id))
         if res.annual_capacity_t > TOL and (res.year-first)*365 + res.start_day < available_day(case, res.source_id, active):
-            checks.append(violation("RESERVATION_BEFORE_COMMISSIONING", res.year, (res.year-first)*365 + res.start_day, available_day(case, res.source_id, active), res.source_id))
+            checks.append(violation("RESERVATION_BEFORE_COMMISSIONING", res.year, res.annual_capacity_t, 0, res.source_id))
 
     arrivals = defaultdict(list)
     schedule = []
@@ -179,15 +211,19 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
         sid = order.source_id
         source = case.sources[sid]
         scheduled = day_index(order.delivery_date, first)
+        if plan.adaptation and i >= plan.adaptation["committed_orders"]:
+            decision = day_index(plan.adaptation["decision_date"], first)
+            if day_index(order.order_date, first) < decision or scheduled < decision+plan.adaptation["minimum_reaction_days"]:
+                raise ValueError("Дополнительный заказ ответа нарушает дату решения или срок реакции")
         if not 0 <= scheduled < n:
             raise ValueError("Плановая поставка вне расчетного горизонта")
         year = first + scheduled // 365
         if order.startup and (scheduled != 0 or not plan.assumptions.opening_stock_funding.strip()):
             raise ValueError("Стартовая партия требует дату начала горизонта и описание финансирования")
-        if order.contingency and not risk:
+        if order.contingency and not (risk or plan.adaptation):
             raise ValueError("Контингентная активация разрешена только в отдельном риск-сценарии")
         annual_orders[sid, year] += order.volume_t
-        if sid == "E" and order.volume_t > TOL and not order.contingency:
+        if sid == "E" and order.volume_t > TOL:
             emergency_years.add(year)
         delay, share = 0, 1.0
         cfg = case.scenarios.get(scenario, {})
@@ -195,6 +231,8 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
         share = shares.get(source["name"], {}).get(year, shares.get("default", 1.0))
         if risk and sid == risk.source_id and risk.start_year <= year <= risk.end_year:
             delay, share = risk.delay_days, risk.delivery_share
+            if risk.mitigation_active and day_index(order.order_date, first) >= mitigation_effective_day(case, risk):
+                delay, share = risk.residual_delay_days, risk.residual_delivery_share
         arrival = scheduled + delay
         valid = True
         lead = 0 if sid == "C" else source_lead(source, plan)
@@ -204,7 +242,7 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
             valid = False
         start = available_day(case, sid, active)
         if scheduled < start or (sid == "D" and ordered < start):
-            checks.append(violation("SOURCE_UNAVAILABLE", order.delivery_date, scheduled, start + (lead if sid == "D" else 0), sid))
+            checks.append(violation("SOURCE_UNAVAILABLE", order.delivery_date, order.volume_t, 0, sid))
             valid = False
         res = reservations.get((sid, year))
         if not res or not res.start_day <= scheduled % 365 < res.end_day:
@@ -218,9 +256,9 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
         if valid and arrival < n:
             arrivals[arrival].append(record)
 
-    financial = {}
+    financial, contracts = {}, []
     for year in case.years:
-        money = dict(year=year, procurement_mln=0.0, reservation_mln=0.0, holding_mln=0.0, fixed_opex_mln=0.0, capex_mln=capex[year])
+        money = dict(year=year, procurement_mln=0.0, fuel_purchasing_mln=0.0, take_or_pay_mln=0.0, reservation_mln=0.0, holding_mln=0.0, fixed_opex_mln=0.0, capex_mln=capex[year], mitigation_mln=0.0)
         for sid, source in case.sources.items():
             order = annual_orders[sid, year]
             res = reservations.get((sid, year))
@@ -229,9 +267,36 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
             maximum = min(reserved, source["capacity_t_per_year"]) * fraction
             if order > maximum + TOL:
                 checks.append(violation("ORDER_EXCEEDS_CONTRACT", year, order, maximum, sid))
-            money["procurement_mln"] += payable_volume(order, reserved*fraction, source["take_or_pay_share"]) * source["variable_cost_mln_per_t"] * price_multiplier(case, scenario, source, year, risk)
-            money["reservation_mln"] += reservation_payment(source["reservation_rate_mln_per_t_year_capacity"], reserved, fraction)
+            unit_price = source["variable_cost_mln_per_t"] * price_multiplier(case, scenario, source, year, risk)
+            paid = payable_volume(order, reserved*fraction, source["take_or_pay_share"])
+            reservation_cost = reservation_payment(source["reservation_rate_mln_per_t_year_capacity"], reserved, fraction)
+            money["fuel_purchasing_mln"] += order*unit_price
+            money["take_or_pay_mln"] += (paid-order)*unit_price
+            money["procurement_mln"] += paid*unit_price
+            money["reservation_mln"] += reservation_cost
+            start = available_day(case, sid, active)
+            active_fraction = max(0, min(365, (year-first+1)*365-start))/365
+            arrived = sum(s["arrival_t"] for s in schedule if s["source_id"] == sid and s["valid"] and int(s["actual_date"][:4]) == year)
+            if arrived > source["capacity_t_per_year"]*active_fraction + TOL:
+                checks.append(violation("ARRIVAL_CAPACITY_EXCEEDED", year, arrived, source["capacity_t_per_year"]*active_fraction, sid))
+            scenario_share = case.scenarios.get(scenario, {}).get("actual_delivery_share", {}).get(source["name"], {}).get(year, 1)
+            contracts.append(dict(year=year, source_id=sid, source_capacity_t=source["capacity_t_per_year"], available_capacity_t=source["capacity_t_per_year"]*active_fraction,
+                scenario_potential_t=source["capacity_t_per_year"]*active_fraction*scenario_share, reserved_capacity_t=reserved,
+                period_fraction=fraction, contracted_volume_t=reserved*fraction, ordered_t=order, payable_t=paid,
+                fuel_purchasing_mln=order*unit_price, take_or_pay_mln=(paid-order)*unit_price, reservation_mln=reservation_cost,
+                price_mln_per_t=unit_price, top_share=source["take_or_pay_share"], uncalled_contract_t=max(0, maximum-order),
+                lead_days=0 if sid == "C" else source_lead(source, plan)))
         financial[year] = money
+    if risk and risk.mitigation_active:
+        payment_year = int((risk.mitigation_decision_date or f"{risk.start_year}-01-01")[:4])
+        if payment_year not in financial:
+            raise ValueError("Оплата меры должна находиться в расчетном горизонте")
+        financial[payment_year]["mitigation_mln"] += risk.mitigation_cost_mln
+    if plan.adaptation:
+        payment_year = int(plan.adaptation["decision_date"][:4])
+        if payment_year not in financial or plan.adaptation["coordination_cost_mln"] < 0:
+            raise ValueError("Некорректная дата или стоимость адаптации")
+        financial[payment_year]["mitigation_mln"] += plan.adaptation["coordination_cost_mln"]
 
     inventory = 0.0
     trace = []
@@ -305,7 +370,7 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
         streak = streak + 1 if year in emergency_years else 0
         if streak > threshold(case, "EMERGENCY_BASE_STREAK", 2):
             checks.append(violation("EMERGENCY_BASE_STREAK", year, streak, threshold(case, "EMERGENCY_BASE_STREAK", 2), "E"))
-        financial[year]["total_cost_mln"] = sum(v for k, v in financial[year].items() if k.endswith("_mln"))
+        financial[year]["total_cost_mln"] = sum(financial[year][k] for k in ["procurement_mln", "reservation_mln", "holding_mln", "fixed_opex_mln", "capex_mln", "mitigation_mln"])
     for year, cid in [(2037, "CAPEX_2037"), (2040, "CAPEX_2040")]:
         if year in case.years:
             cumulative = sum(value for y, value in capex.items() if y <= year)
@@ -320,6 +385,10 @@ def evaluate(case: Case, plan: Plan, scenario: str = "BASE", risk: Risk | None =
                                           "earth_new": "lead time is commissioning; subsequent deliveries scheduled under annual capacity",
                                           "payment": "annual delivery-year orders paid even under delivery disruption",
                                           "demand_scale": demand_scale},
-                   yearly_balance=list(yearly.values()), source_schedule=schedule, inventory_trace=trace,
+                   input_snapshot=case.__dict__, plan_snapshot=plan.model_dump(),
+                   yearly_balance=list(yearly.values()), source_schedule=schedule, inventory_trace=trace, contract_ledger=contracts,
                    financial_breakdown=list(financial.values()), constraint_checks=checks, risk_register=[])
-    return Result(payload)
+    result = Result(payload)
+    from .evidence import enrich
+    enrich(case, plan, result)
+    return result

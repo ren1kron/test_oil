@@ -15930,5 +15930,393 @@
     "emergency_base_definition": "Любая заранее запланированная закупка E; активации отдельных риск-сценариев исключены",
     "notes": []
   },
-  "description": "Минимальная стоимость BASE при 100% обслуживании; инвестиции на границе года"
+  "description": "Минимальная стоимость BASE при 100% обслуживании; инвестиции на границе года",
+  "case_snapshot": {
+    "demand": {
+      "2035": {
+        "year": 2035.0,
+        "base_total_t": 100.0,
+        "base_critical_t": 80.0,
+        "low_total_t": 80.0,
+        "high_total_t": 110.0,
+        "status": "CASE_INPUT"
+      },
+      "2036": {
+        "year": 2036.0,
+        "base_total_t": 140.0,
+        "base_critical_t": 105.0,
+        "low_total_t": 112.0,
+        "high_total_t": 154.0,
+        "status": "CASE_INPUT"
+      },
+      "2037": {
+        "year": 2037.0,
+        "base_total_t": 190.0,
+        "base_critical_t": 135.0,
+        "low_total_t": 152.0,
+        "high_total_t": 209.0,
+        "status": "CASE_INPUT"
+      },
+      "2038": {
+        "year": 2038.0,
+        "base_total_t": 250.0,
+        "base_critical_t": 170.0,
+        "low_total_t": 200.0,
+        "high_total_t": 312.5,
+        "status": "CASE_INPUT"
+      },
+      "2039": {
+        "year": 2039.0,
+        "base_total_t": 320.0,
+        "base_critical_t": 210.0,
+        "low_total_t": 256.0,
+        "high_total_t": 400.0,
+        "status": "CASE_INPUT"
+      },
+      "2040": {
+        "year": 2040.0,
+        "base_total_t": 390.0,
+        "base_critical_t": 250.0,
+        "low_total_t": 312.0,
+        "high_total_t": 487.5,
+        "status": "CASE_INPUT"
+      },
+      "2041": {
+        "year": 2041,
+        "base_total_t": 409.5,
+        "base_critical_t": 262.5,
+        "low_total_t": 327.6,
+        "high_total_t": 511.875,
+        "status": "TEAM_ASSUMPTION"
+      }
+    },
+    "sources": {
+      "A": {
+        "source_id": "A",
+        "name": "Earth-Core",
+        "capacity_t_per_year": 190.0,
+        "variable_cost_mln_per_t": 6.2,
+        "reservation_rate_mln_per_t_year_capacity": 0.45,
+        "take_or_pay_share": 0.7,
+        "lead_time_min_value": 12.0,
+        "lead_time_max_value": 12.0,
+        "lead_time_unit": "month",
+        "reliability_profile": "constant:0.96",
+        "available_from_year": 2035.0,
+        "status": "CASE_INPUT",
+        "notes": "long-term Earth-to-orbit channel"
+      },
+      "B": {
+        "source_id": "B",
+        "name": "Earth-Flex",
+        "capacity_t_per_year": 110.0,
+        "variable_cost_mln_per_t": 8.9,
+        "reservation_rate_mln_per_t_year_capacity": 0.15,
+        "take_or_pay_share": 0.0,
+        "lead_time_min_value": 4.0,
+        "lead_time_max_value": 4.0,
+        "lead_time_unit": "month",
+        "reliability_profile": "constant:0.985",
+        "available_from_year": 2035.0,
+        "status": "CASE_INPUT",
+        "notes": "flexible Earth-to-orbit channel"
+      },
+      "C": {
+        "source_id": "C",
+        "name": "Earth-New",
+        "capacity_t_per_year": 130.0,
+        "variable_cost_mln_per_t": 7.1,
+        "reservation_rate_mln_per_t_year_capacity": 0.3,
+        "take_or_pay_share": 0.5,
+        "lead_time_min_value": 18.0,
+        "lead_time_max_value": 24.0,
+        "lead_time_unit": "month",
+        "reliability_profile": "first_operating_year:0.88;later:0.94",
+        "available_from_year": null,
+        "status": "CASE_INPUT",
+        "notes": "capacity available only after option exercise and preparation"
+      },
+      "D": {
+        "source_id": "D",
+        "name": "Lunar-ISRU",
+        "capacity_t_per_year": 120.0,
+        "variable_cost_mln_per_t": 3.0,
+        "reservation_rate_mln_per_t_year_capacity": 0.0,
+        "take_or_pay_share": 0.0,
+        "lead_time_min_value": 1.0,
+        "lead_time_max_value": 2.0,
+        "lead_time_unit": "month",
+        "reliability_profile": "2038:0.78;2039:0.90;2040:0.93",
+        "available_from_year": 2038.0,
+        "status": "CASE_INPUT",
+        "notes": "available after required CAPEX financing and commissioning"
+      },
+      "E": {
+        "source_id": "E",
+        "name": "Emergency",
+        "capacity_t_per_year": 80.0,
+        "variable_cost_mln_per_t": 13.8,
+        "reservation_rate_mln_per_t_year_capacity": 0.35,
+        "take_or_pay_share": 0.0,
+        "lead_time_min_value": 6.0,
+        "lead_time_max_value": 6.0,
+        "lead_time_unit": "week",
+        "reliability_profile": "constant:0.995",
+        "available_from_year": 2035.0,
+        "status": "CASE_INPUT",
+        "notes": "authoritative organizer lead time is six weeks"
+      },
+      "X": {
+        "source_id": "X",
+        "name": "Source-X",
+        "capacity_t_per_year": 40.0,
+        "variable_cost_mln_per_t": 10.0,
+        "reservation_rate_mln_per_t_year_capacity": 0.15,
+        "take_or_pay_share": 0.0,
+        "lead_time_min_value": 4.0,
+        "lead_time_max_value": 4.0,
+        "lead_time_unit": "month",
+        "reliability_profile": "constant:0.985",
+        "available_from_year": 2035.0,
+        "status": "TEAM_ASSUMPTION",
+        "notes": "flexible Earth-to-orbit channel"
+      }
+    },
+    "storage": {
+      "BASE": {
+        "storage_id": "BASE",
+        "name": "Base storage",
+        "capacity_t": 70.0,
+        "loss_rate_on_throughput": 0.045,
+        "holding_cost_mln_per_t_year": 0.72,
+        "capex_mln": 0.0,
+        "fixed_opex_mln_per_year": 0.0,
+        "available_from_year": 2035.0,
+        "status": "CASE_INPUT",
+        "notes": "existing storage"
+      },
+      "ZBO": {
+        "storage_id": "ZBO",
+        "name": "ZBO modernization",
+        "capacity_t": 120.0,
+        "loss_rate_on_throughput": 0.012,
+        "holding_cost_mln_per_t_year": 0.72,
+        "capex_mln": 180.0,
+        "fixed_opex_mln_per_year": 12.0,
+        "available_from_year": 2036.0,
+        "status": "CASE_INPUT",
+        "notes": "case-model coefficient; not a universal real ZBO performance claim"
+      }
+    },
+    "investments": {
+      "EARTH_NEW": {
+        "investment_id": "EARTH_NEW",
+        "name": "Earth-New option",
+        "option_fee_mln": 90.0,
+        "exercise_cost_mln": 270.0,
+        "total_capex_mln": 360.0,
+        "commissioning_rule": "18-24 months after exercise/preparation decision",
+        "fixed_opex_mln_per_year": 0.0,
+        "status": "CASE_INPUT",
+        "notes": "do not add another 360 on top of 90+270"
+      },
+      "LUNAR_ISRU": {
+        "investment_id": "LUNAR_ISRU",
+        "name": "Lunar-ISRU pilot",
+        "option_fee_mln": 0.0,
+        "exercise_cost_mln": 1250.0,
+        "total_capex_mln": 1250.0,
+        "commissioning_rule": "must be financed before 2038; available from 2038",
+        "fixed_opex_mln_per_year": 70.0,
+        "status": "CASE_INPUT",
+        "notes": "capacity effect is defined in supply_sources.csv"
+      },
+      "ZBO": {
+        "investment_id": "ZBO",
+        "name": "ZBO modernization",
+        "option_fee_mln": 0.0,
+        "exercise_cost_mln": 180.0,
+        "total_capex_mln": 180.0,
+        "commissioning_rule": "option available from 2036",
+        "fixed_opex_mln_per_year": 12.0,
+        "status": "CASE_INPUT",
+        "notes": "capacity becomes 120 t; loss rate becomes 1.2% of throughput"
+      }
+    },
+    "constraints": [
+      {
+        "constraint_id": "BASE_CRITICAL_SERVICE",
+        "metric": "critical_service_level",
+        "operator": ">=",
+        "value": 0.99,
+        "unit": "share",
+        "period": "annual",
+        "scenario": "BASE",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "critical demand service minimum"
+      },
+      {
+        "constraint_id": "BASE_TOTAL_SERVICE",
+        "metric": "total_service_level",
+        "operator": ">=",
+        "value": 0.97,
+        "unit": "share",
+        "period": "annual",
+        "scenario": "BASE",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "total demand service minimum"
+      },
+      {
+        "constraint_id": "CAPEX_2037",
+        "metric": "cumulative_capex",
+        "operator": "<=",
+        "value": 1800.0,
+        "unit": "mln_units",
+        "period": "through_2037",
+        "scenario": "ALL",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "CAPEX through end-2037"
+      },
+      {
+        "constraint_id": "CAPEX_2040",
+        "metric": "cumulative_capex",
+        "operator": "<=",
+        "value": 2800.0,
+        "unit": "mln_units",
+        "period": "through_2040",
+        "scenario": "ALL",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "total CAPEX through 2040"
+      },
+      {
+        "constraint_id": "RESERVE_45D",
+        "metric": "reserve_equivalent_days",
+        "operator": ">=",
+        "value": 45.0,
+        "unit": "days",
+        "period": "annual",
+        "scenario": "ALL",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "physical stock or demonstrably equivalent contracted emergency reserve"
+      },
+      {
+        "constraint_id": "EMERGENCY_BASE_STREAK",
+        "metric": "emergency_base_channel_consecutive_years",
+        "operator": "<=",
+        "value": 2.0,
+        "unit": "years",
+        "period": "2035_2040",
+        "scenario": "ALL",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "Emergency cannot serve as the base channel for more than two consecutive years"
+      },
+      {
+        "constraint_id": "STRESS_LOSS_LIMIT",
+        "metric": "losses_divided_by_throughput",
+        "operator": "<=",
+        "value": 0.02,
+        "unit": "share",
+        "period": "2038_2040",
+        "scenario": "MANDATORY_STRESS",
+        "severity": "hard",
+        "status": "CASE_INPUT",
+        "description": "applies from 2038 in mandatory stress only"
+      }
+    ],
+    "scenarios": {
+      "BASE": {
+        "scenario_id": "BASE",
+        "label_ru": "Стандартный сценарий",
+        "status": "CASE_INPUT",
+        "demand_multiplier": {
+          "default": 1.0,
+          "2041": 1.0
+        },
+        "variable_price_multiplier": {
+          "default": 1.0
+        },
+        "actual_delivery_share": {
+          "default": 1.0
+        },
+        "loss_ceiling": {
+          "enabled": false
+        },
+        "notes": [
+          "BASE does not apply reliability as an automatic delivery multiplier."
+        ],
+        "critical_demand_multiplier": {
+          "2041": 1.0
+        }
+      },
+      "MANDATORY_STRESS": {
+        "scenario_id": "MANDATORY_STRESS",
+        "label_ru": "Обязательный стрессовый сценарий",
+        "status": "CASE_INPUT",
+        "demand_multiplier": {
+          "2035": 1.0,
+          "2036": 1.0,
+          "2037": 1.0,
+          "2038": 1.15,
+          "2039": 1.15,
+          "2040": 1.15,
+          "2041": 1.0
+        },
+        "critical_demand_multiplier": {
+          "2035": 1.0,
+          "2036": 1.0,
+          "2037": 1.0,
+          "2038": 1.15,
+          "2039": 1.15,
+          "2040": 1.15,
+          "2041": 1.0
+        },
+        "variable_price_multiplier": {
+          "Earth-Core": {
+            "2035": 1.0,
+            "2036": 1.0,
+            "2037": 1.0,
+            "2038": 1.25,
+            "2039": 1.25,
+            "2040": 1.0
+          },
+          "Earth-Flex": {
+            "2035": 1.0,
+            "2036": 1.0,
+            "2037": 1.0,
+            "2038": 1.25,
+            "2039": 1.25,
+            "2040": 1.0
+          }
+        },
+        "actual_delivery_share": {
+          "Lunar-ISRU": {
+            "2038": 0.55,
+            "2039": 0.75,
+            "2040": 1.0
+          }
+        },
+        "loss_ceiling": {
+          "enabled": true,
+          "from_year": 2038,
+          "max_losses_divided_by_throughput": 0.02
+        },
+        "notes": [
+          "55% and 75% are actual delivery shares and must not be multiplied by reliability again.",
+          "Reservation tariffs, CAPEX and other prices are not changed by the mandatory +25% price shock.",
+          "Mandatory stress is not automatically combined with high-demand or geopolitical research scenarios."
+        ]
+      }
+    },
+    "assumptions": [
+      "Source-X: 40 т/год, 10 млн/т; прочие параметры как Earth-Flex; синтетический пример",
+      "2041: спрос +5%; цены, доступная мощность и физические нормы как в 2040; reliability только metadata; без переноса конечных CAPEX/stress лимитов"
+    ]
+  },
+  "adaptation": null
 }

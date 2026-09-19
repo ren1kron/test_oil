@@ -50,8 +50,9 @@ def test_extra_source_uses_same_calculation(single_year, funded_plan):
 def test_risks_sensitivity_and_schedule(single_year, funded_plan):
     risk = Risk(risk_id="TEAM_FAILURE", event="Недопоставка", source_id="A", start_year=2035, end_year=2035, delivery_share=.5)
     affected, residual = assess_risk(single_year, funded_plan, risk)
-    assert affected.summary()["shortage_t"] > residual.summary()["shortage_t"]
-    assert residual.summary()["shortage_t"] < 1e-6
+    # All A orders were already placed before the response date: no retroactive cure.
+    assert affected.summary()["shortage_t"] == residual.summary()["shortage_t"]
+    assert residual.total_cost-affected.total_cost == pytest.approx(risk.mitigation_cost_mln)
     assert affected.payload["risk_register"][0]["physical_consequence_t"] > 0
     assert len(compare(single_year, funded_plan)) == 4
     assert demand_threshold(single_year, funded_plan)["status"] == "found"

@@ -1,0 +1,26 @@
+date,milestone,dependency,owner,value_mln,plan_id,scenario_id,input_fingerprint
+2034-01-01,"Договор A, 2035: 122.786 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2035-01-01,Опцион Earth-New,До реализации опциона,financier,90.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2035-01-01,Финансирование EARTH_NEW,Одобрение финансирующей стороны,financier,270.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2035-02-15,"Договор A, 2036: 168.198 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2036-01-01,Ввод ZBO,Оплата 2036-01-01 и срок подготовки,operator,0.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2036-01-01,Финансирование ZBO,Одобрение финансирующей стороны,financier,180.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2036-03-25,"Договор A, 2037: 190 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2037-01-01,Ввод EARTH_NEW,Оплата 2035-01-01 и срок подготовки,operator,0.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2037-01-01,Финансирование LUNAR_ISRU,Одобрение финансирующей стороны,financier,1250.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2037-03-02,"Договор A, 2038: 190 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-01-01,Ввод LUNAR_ISRU,Оплата 2037-01-01 и срок подготовки,operator,0.0,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-01-01,"Договор B, 2038: 110 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-01-01,"Договор C, 2038: 130 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-01-01,"Договор D, 2038: 120 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-01-01,"Договор E, 2038: 80 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2038-04-22,"Договор A, 2039: 190 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2039-01-01,"Договор B, 2039: 110 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2039-01-01,"Договор C, 2039: 130 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2039-01-01,"Договор E, 2039: 80 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2039-02-25,"Договор D, 2039: 120 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2039-03-20,"Договор A, 2040: 190 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2040-01-01,"Договор B, 2040: 110 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2040-01-01,"Договор C, 2040: 130 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2040-01-01,"Договор E, 2040: 80 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab
+2040-01-19,"Договор D, 2040: 120 т/год",Зарезервировать до первого заказа; поставка после ввода,operator / supplier / launch_provider,,diversified,BASE,3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab

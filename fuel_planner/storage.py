@@ -12,7 +12,7 @@ import pandas as pd
 from .engine import Result
 from .models import Plan
 
-TABLES = ("yearly_balance", "source_schedule", "inventory_trace", "financial_breakdown", "constraint_checks", "risk_register")
+TABLES = ("yearly_balance", "source_schedule", "inventory_trace", "financial_breakdown", "constraint_checks", "risk_register", "contract_ledger", "constraint_ledger", "independent_controls", "roadmap", "stakeholders")
 
 
 def load_plan(path: Path | str) -> Plan:
@@ -47,7 +47,13 @@ def export_bytes(result: Result, format: str = "json") -> bytes:
                 archive.writestr(f"{name}.csv", pd.DataFrame(payload[name]).to_csv(index=False).encode("utf-8-sig"))
     elif format == "xlsx":
         with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-            pd.DataFrame([{"field": k, "value": json.dumps(v, ensure_ascii=False)} for k, v in metadata.items()]).to_excel(writer, sheet_name="metadata", index=False)
+            meta_rows = []
+            for key, value in metadata.items():
+                text = json.dumps(value, ensure_ascii=False)
+                # Avoid silently truncating a large saved plan or dataset in Excel.
+                for part in range(0, len(text), 30000):
+                    meta_rows.append(dict(field=key, part=part//30000, value=text[part:part+30000]))
+            pd.DataFrame(meta_rows).to_excel(writer, sheet_name="metadata", index=False)
             for name in TABLES:
                 # Excel limits text cells to 32767 characters; nested records stay in JSON.
                 rows = [{k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v for k, v in row.items()} for row in payload[name]]

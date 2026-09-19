@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from .analysis import compare
-from .data import ROOT, load_case, research_case
+from .data import ROOT, load_case, research_case, case_from_snapshot
 from .engine import evaluate
 from .optimizer import Settings, optimize
 from .storage import export_bytes, load_plan, save_plan
@@ -40,14 +40,20 @@ def main():
             else:
                 return 2
         elif args.command == "compare":
-            rows = compare(case, load_plan(args.plan))
+            plan = load_plan(args.plan)
+            if plan.case_snapshot is not None:
+                case = case_from_snapshot(plan.case_snapshot)
+            rows = compare(case, plan)
             text = json.dumps(rows, ensure_ascii=False, indent=2)
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_text(text, encoding="utf-8")
             print(text)
         else:
-            result = evaluate(case, load_plan(args.plan), args.scenario)
+            plan = load_plan(args.plan)
+            if plan.case_snapshot is not None:
+                case = case_from_snapshot(plan.case_snapshot)
+            result = evaluate(case, plan, args.scenario)
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_bytes(export_bytes(result, args.format))

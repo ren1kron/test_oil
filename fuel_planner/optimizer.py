@@ -7,7 +7,7 @@ import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
 from scipy.sparse import coo_matrix
 
-from .data import Case
+from .data import Case, case_snapshot, load_case
 from .engine import evaluate, reserve_t, source_lead, threshold
 from .models import Decisions, Investment, Order, Plan, Reservation, day_label
 
@@ -195,6 +195,8 @@ def optimize(case: Case, settings: Settings | None = None) -> Optimization:
             if volume > 1e-8:
                 orders.append(Order(source_id=sid, order_date=day_label(day-lead, first), delivery_date=day_label(day, first), volume_t=float(volume), startup=day == 0))
     plan = Plan(plan_id=settings.plan_id, decisions=Decisions(supply_orders=orders, capacity_reservations=reservations, investments=investments), description="Минимальная стоимость BASE при 100% обслуживании; инвестиции на границе года")
+    if case.fingerprint != load_case().fingerprint:
+        plan.case_snapshot = case_snapshot(case)
     result.objective_mln = float(solved.fun + constant)
     checked = evaluate(case, plan)
     delta = abs(checked.total_cost-result.objective_mln)

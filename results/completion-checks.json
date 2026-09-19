@@ -1,0 +1,10 @@
+{
+  "input_fingerprint": "3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab",
+  "selected_plan_id": "diversified",
+  "independent_controls_pass": true,
+  "no_negative_inventory": true,
+  "identical_inputs_identical_results": true,
+  "scenarios_use_same_inputs": true,
+  "stakeholder_cash_reconciles": true,
+  "violations_have_year_value_reason": true
+}

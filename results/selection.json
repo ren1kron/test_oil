@@ -1,0 +1,37 @@
+{
+  "selected_plan_id": "diversified",
+  "rule": "Среди BASE-исполнимых планов: сначала hard constraints после допустимого ответа, затем критический недоотпуск, общий недоотпуск, стоимость BASE. Веса не используются; это TEAM_DECISION в пользу критических миссий.",
+  "input_fingerprint": "3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab",
+  "ranking": [
+    {
+      "plan_id": "diversified",
+      "keys": [
+        false,
+        0.0,
+        0.0,
+        11790.159803931263,
+        "diversified"
+      ]
+    },
+    {
+      "plan_id": "earth",
+      "keys": [
+        false,
+        20.959452,
+        144.0,
+        10265.13564568828,
+        "earth"
+      ]
+    },
+    {
+      "plan_id": "lunar",
+      "keys": [
+        false,
+        62.470685,
+        226.992,
+        9795.159803931261,
+        "lunar"
+      ]
+    }
+  ]
+}

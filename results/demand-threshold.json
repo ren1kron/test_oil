@@ -1,6 +1,11 @@
 {
-  "status": "found",
-  "last_passing": 1.0,
-  "first_failing": 1.0000152587890625,
-  "resolution": 1.52587890625e-05
+  "plan_id": "diversified",
+  "input_fingerprint": "3bb53686d954c2989e85ce538f6a33c176ff5771ade8463123c631ba8d1f54ab",
+  "result": {
+    "parameter": "demand",
+    "status": "found",
+    "last_passing": 1.0,
+    "first_failing": 1.0000203450520833,
+    "basis": "0.8–1.25 из low/high данных; ×1.5–2 только TEAM reverse-stress, не прогноз"
+  }
 }

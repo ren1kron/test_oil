@@ -7,7 +7,11 @@
     "shortage_t": 6.372680161348399e-14,
     "min_total_service": 0.999999999999993,
     "min_critical_service": 0.9999999999999937,
-    "violations": 0
+    "violations": 0,
+    "critical_shortage_t": 2.8848035071860068e-12,
+    "min_inventory_t": 0,
+    "max_inventory_t": 119.31506849315069,
+    "rejected_t": 1.4383456189475712e-14
   },
   "assumptions": [
     "Source-X: 40 т/год, 10 млн/т; прочие параметры как Earth-Flex; синтетический пример",

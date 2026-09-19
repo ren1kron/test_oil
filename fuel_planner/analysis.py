@@ -12,17 +12,24 @@ def compare(case: Case, plan: Plan):
 def assess_risk(case: Case, plan: Plan, risk: Risk):
     base = evaluate(case, plan)
     affected = evaluate(case, plan, risk.risk_id, risk)
-    residual_risk = risk.model_copy(update={"delivery_share": risk.residual_delivery_share, "delay_days": risk.residual_delay_days})
+    residual_risk = risk.model_copy(update={"mitigation_active": True})
     residual = evaluate(case, plan, residual_risk.risk_id, residual_risk)
     row = risk.model_dump()
-    row.update(affected_parameter="delivery_share / delivery_delay / variable_price", period=f"{risk.start_year}–{risk.end_year}",
+    row.update(plan_id=plan.plan_id, input_fingerprint=case.fingerprint, plan_fingerprint=base.payload["plan_fingerprint"],
+               affected_parameter="delivery_share / delivery_delay / variable_price", period=f"{risk.start_year}–{risk.end_year}",
                financial_consequence_mln=affected.total_cost-base.total_cost,
                physical_consequence_t=affected.summary()["shortage_t"]-base.summary()["shortage_t"],
                service_consequence=affected.summary()["min_total_service"]-base.summary()["min_total_service"],
                residual_shortage_t=residual.summary()["shortage_t"],
                residual_cost_delta_mln=residual.total_cost-base.total_cost,
-               mitigation_cost_included=False)
+               mitigation_cost_included=True, mitigation_cost_mln=risk.mitigation_cost_mln,
+               shortage_reduction_t=affected.summary()["shortage_t"]-residual.summary()["shortage_t"],
+               critical_shortage_reduction_t=affected.summary()["critical_shortage_t"]-residual.summary()["critical_shortage_t"],
+               mitigation_net_cost_mln=residual.total_cost-affected.total_cost,
+               decision_date=risk.mitigation_decision_date or f"{risk.start_year}-01-01",
+               commitment_rule="Only orders placed after decision + reaction_days change; no historical deliveries or commitments rewritten")
     affected.payload["risk_register"] = [row]
+    residual.payload["risk_register"] = [row]
     return affected, residual
 
 
